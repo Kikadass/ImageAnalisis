@@ -90,6 +90,10 @@ ImageAnalisis_EXTERNAL_OBJECTS =
 
 ImageAnalisis: CMakeFiles/ImageAnalisis.dir/main.cpp.o
 ImageAnalisis: CMakeFiles/ImageAnalisis.dir/build.make
+ImageAnalisis: /usr/local/lib/libopencv_highgui.3.3.0.dylib
+ImageAnalisis: /usr/local/lib/libopencv_imgcodecs.3.3.0.dylib
+ImageAnalisis: /usr/local/lib/libopencv_imgproc.3.3.0.dylib
+ImageAnalisis: /usr/local/lib/libopencv_core.3.3.0.dylib
 ImageAnalisis: CMakeFiles/ImageAnalisis.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/kikepieraserra/GitHub/ImageAnalisis/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ImageAnalisis"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/ImageAnalisis.dir/link.txt --verbose=$(VERBOSE)

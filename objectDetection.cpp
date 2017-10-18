@@ -1,5 +1,3 @@
-
-/*
 #include "opencv2/objdetect.hpp"
 #include "opencv2/videoio.hpp"
 #include "opencv2/highgui.hpp"
@@ -11,22 +9,22 @@
 using namespace std;
 using namespace cv;
 
-// Function Headers
+/** Function Headers */
 void detectAndDisplay( Mat frame );
 
-// Global variables
+/** Global variables */
 String face_cascade_name, eyes_cascade_name;
 CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 String window_name = "Capture - Face detection";
 
-// @function main
+/** @function main */
 int main( int argc, const char** argv )
 {
     CommandLineParser parser(argc, argv,
-                             "{help h||}"
-                                     "{face_cascade|../../data/haarcascades/haarcascade_frontalface_alt.xml|}"
-                                     "{eyes_cascade|../../data/haarcascades/haarcascade_eye_tree_eyeglasses.xml|}");
+        "{help h||}"
+        "{face_cascade|../../data/haarcascades/haarcascade_frontalface_alt.xml|}"
+        "{eyes_cascade|../../data/haarcascades/haarcascade_eye_tree_eyeglasses.xml|}");
 
     cout << "\nThis program demonstrates using the cv::CascadeClassifier class to detect objects (Face + eyes) in a video stream.\n"
             "You can use Haar or LBP features.\n\n";
@@ -62,8 +60,9 @@ int main( int argc, const char** argv )
     return 0;
 }
 
-// @function detectAndDisplay
-void detectAndDisplay( Mat frame ){
+/** @function detectAndDisplay */
+void detectAndDisplay( Mat frame )
+{
     std::vector<Rect> faces;
     Mat frame_gray;
 
@@ -93,80 +92,4 @@ void detectAndDisplay( Mat frame ){
     }
     //-- Show what you got
     imshow( window_name, frame );
-}
-
-
-*/
-
-
-
-
-
-
-
-
-
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui/highgui.hpp>
-
-#include <iostream>
-#include <opencv/cv.hpp>
-
-using namespace cv;
-using namespace std;
-
-String window_name = "Image Analisis";
-
-Mat scaleUp(Mat image, int scale){
-    resize(image, image, image.size()*scale, scale, scale);   //resize image
-    resizeWindow(window_name, image.cols, image.rows);    // resize window
-
-    imshow(window_name, image);                   // Show our image inside it.
-
-    return image;
-}
-
-Mat scaleDown(Mat image, int scale){
-    resize(image, image, image.size()/scale, 1/scale, 1/scale);   //resize image
-    resizeWindow(window_name, image.cols, image.rows);    // resize window
-
-    imshow(window_name, image);                   // Show our image inside it.
-
-    return image;
-}
-
-int main( int argc, char** argv ) {
-    Mat image;
-
-
-    // Read the file
-    image = imread("/Users/kikepieraserra/Pictures/Navidades 2016-2017/UK/IMG_3859.jpg", CV_LOAD_IMAGE_UNCHANGED);
-
-    if(! image.data ){                              // Check for invalid input
-        cout <<  "Could not open or find the image" << std::endl ;
-        return -1;
-    }
-
-
-    namedWindow(window_name, CV_WINDOW_AUTOSIZE);// Create a window for display.
-    image = scaleDown(image, 4);
-
-    //moveWindow("Display", 700, 700);            // put window in certain position in the screen
-
-    //imwrite("filename.jpg", image); //save image
-
-    //absdiff();   compare 2 images and tell the difference, result: threshold image https://www.youtube.com/watch?v=X6rPdRZzgjg&index=3&list=PLo1wvPF7fMxQ_SXibg1azwBfmTFn02B9O
-
-    //infinite loop
-    while (1) {
-        // if pressed ESC waits for 1ms
-        if (waitKeyEx(1) == 27) {
-            return 0;
-        }
-        //resize(image, image, image.size() / 4, 0.25, 0.25);
-
-    }
-
-
 }
