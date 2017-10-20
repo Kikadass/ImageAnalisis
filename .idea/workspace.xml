@@ -28,16 +28,19 @@
       <file leaf-file-name="main.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="335">
-              <caret line="208" column="6" lean-forward="false" selection-start-line="208" selection-start-column="6" selection-end-line="208" selection-end-column="6" />
+            <state relative-caret-position="312">
+              <caret line="291" column="27" lean-forward="false" selection-start-line="291" selection-start-column="27" selection-end-line="291" selection-end-column="27" />
               <folding>
-                <element signature="e#0#32#0" expanded="true" />
-                <element signature="e#254#541#0" expanded="false" />
-                <element signature="e#543#836#0" expanded="false" />
-                <element signature="e#839#2095#0" expanded="false" />
-                <element signature="e#2132#3727#0" expanded="false" />
-                <element signature="e#3729#3999#0" expanded="false" />
-                <element signature="e#4001#5340#0" expanded="false" />
+                <element signature="e#254#542#0" expanded="false" />
+                <element signature="e#544#838#0" expanded="false" />
+                <element signature="e#840#967#0" expanded="false" />
+                <element signature="e#969#2284#0" expanded="false" />
+                <element signature="e#2322#2480#0" expanded="false" />
+                <element signature="e#4343#4613#0" expanded="false" />
+                <element signature="e#4615#6013#0" expanded="false" />
+                <element signature="e#6043#6084#0" expanded="false" />
+                <element signature="e#6043#7310#0" expanded="false" />
+                <element signature="e#7312#8465#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -82,9 +85,11 @@
       <find>size</find>
       <find>neighbourhoodSize*neighbourhoodSize</find>
       <find>0</find>
+      <find>image</find>
     </findStrings>
     <replaceStrings>
       <replace>arraySize</replace>
+      <replace>(*image)</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -231,7 +236,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1507473089454</updated>
-      <workItem from="1507473090868" duration="39489000" />
+      <workItem from="1507473090868" duration="49880000" />
     </task>
     <task id="LOCAL-00001" summary="small change">
       <created>1507473389433</created>
@@ -254,11 +259,18 @@
       <option name="project" value="LOCAL" />
       <updated>1508453360744</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="added EdgePreserving Smoothing">
+      <created>1508458501690</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1508458501690</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="39489000" />
+    <option name="totallyTimeSpent" value="49880000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
@@ -295,11 +307,12 @@
     <MESSAGE value="small change" />
     <MESSAGE value="added openCV and open image resize and move" />
     <MESSAGE value="added Panda images and Penguins&#10;Smoothing with local neighborhood as all square same weight and Gaussian" />
-    <option name="LAST_COMMIT_MESSAGE" value="added Panda images and Penguins&#10;Smoothing with local neighborhood as all square same weight and Gaussian" />
+    <MESSAGE value="added EdgePreserving Smoothing" />
+    <option name="LAST_COMMIT_MESSAGE" value="added EdgePreserving Smoothing" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <option name="time" value="19" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -485,16 +498,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="335">
-          <caret line="208" column="6" lean-forward="false" selection-start-line="208" selection-start-column="6" selection-end-line="208" selection-end-column="6" />
+        <state relative-caret-position="312">
+          <caret line="291" column="27" lean-forward="false" selection-start-line="291" selection-start-column="27" selection-end-line="291" selection-end-column="27" />
           <folding>
-            <element signature="e#0#32#0" expanded="true" />
-            <element signature="e#254#541#0" expanded="false" />
-            <element signature="e#543#836#0" expanded="false" />
-            <element signature="e#839#2095#0" expanded="false" />
-            <element signature="e#2132#3727#0" expanded="false" />
-            <element signature="e#3729#3999#0" expanded="false" />
-            <element signature="e#4001#5340#0" expanded="false" />
+            <element signature="e#254#542#0" expanded="false" />
+            <element signature="e#544#838#0" expanded="false" />
+            <element signature="e#840#967#0" expanded="false" />
+            <element signature="e#969#2284#0" expanded="false" />
+            <element signature="e#2322#2480#0" expanded="false" />
+            <element signature="e#4343#4613#0" expanded="false" />
+            <element signature="e#4615#6013#0" expanded="false" />
+            <element signature="e#6043#6084#0" expanded="false" />
+            <element signature="e#6043#7310#0" expanded="false" />
+            <element signature="e#7312#8465#0" expanded="false" />
           </folding>
         </state>
       </provider>
