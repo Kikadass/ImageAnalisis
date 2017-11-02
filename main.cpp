@@ -25,10 +25,13 @@ void scaleDown(Mat* image, int scale){
     imshow(window_name, (*image));                   // Show our image inside it.
 }
 
+// distance between point 1 and point 2
 double distance(double x1, double y1, double x2, double y2) {
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
+
+// exchange black to white and white to black and all gray levels in the middle
 void negativeImage(Mat& image) {
     for (int i = 0; i < image.rows; i++) {
         for (int j = 0; j < image.cols; j++) {
@@ -37,7 +40,13 @@ void negativeImage(Mat& image) {
     }
 }
 
-//same weights
+//blur the image with a mask with same weights
+// it checks the pixels around certain pixel and takes an average to reduce noise by blurring image
+/*if neighbourhoodSize = 3:
+ *1 1 1
+ *1 1 1
+ *1 1 1
+ * */
 void localNeighborhood(Mat* image, Mat* destImage){
     //modified.at<uint8_t>(r,c) = (original.at<uint8_t>(r, c)) /2; // GRAYSCALE
 
@@ -52,6 +61,8 @@ void localNeighborhood(Mat* image, Mat* destImage){
 
             for (int i = -neighbourhoodSize/2; i <= neighbourhoodSize/2; i++){
                 for (int j = -neighbourhoodSize/2; j <= neighbourhoodSize/2; j++) {
+
+                    // do not take into account pixels that are out of bounds
                     if (r+i >= 0 && r+i < (*image).rows-1 && c+j >= 0 && c+j < (*image).cols-1){
                         finalRValue += (*image).at<Vec3b>(r+i,c+j)[2];
                         finalGValue += (*image).at<Vec3b>(r+i,c+j)[1];
@@ -105,10 +116,12 @@ void gaussianBlur(Mat* image, Mat* destImage){
 
             for (int i = -neighbourhoodSize/2; i <= neighbourhoodSize/2; i++){
                 for (int j = -neighbourhoodSize/2; j <= neighbourhoodSize/2; j++) {
+                    // do not take into account pixels that are out of bounds
                     if (r+i >= 0 && r+i < (*image).rows && c+j >= 0 && c+j < (*image).cols){
+                        // the int will use power of 2, but not taking into account propperly the diagonals.
+                        // the double treats it as a circle.
                         //int multiplier = pow(2, (neighbourhoodSize-abs(i)-abs(j)));
                         double multiplier = max - distance(0, 0, i, j);
-                        //cout << multiplier << endl;
 
                         finalRValue += (*image).at<Vec3b>(r + i, c + j)[2]*multiplier;
                         finalGValue += (*image).at<Vec3b>(r + i, c + j)[1]*multiplier;
@@ -196,6 +209,8 @@ void edgeFiltering(Mat* image, Mat* destImage){
 
             for (int i = -neighbourhoodSize/2; i <= neighbourhoodSize/2; i++){
                 for (int j = -neighbourhoodSize/2; j <= neighbourhoodSize/2; j++) {
+
+                    // do not take into account pixels that are out of bounds
                     if (r+i >= 0 && r+i < (*image).rows && c+j >= 0 && c+j < (*image).cols){
 
                         int multiplier = -1;
@@ -272,61 +287,69 @@ float average_error(Mat* originalImage, Mat* image){
     return (Rerror+Gerror+Berror)/3;
 }
 
+// make images ready to display but not take into account the changes made.
 void getVisualDFT(Mat& image, Mat& destImage, bool dftImage){
 
+    //make 2 planes, and fill it up with zeros
     Mat planes[2] = { Mat::zeros(image.size(), CV_32F), Mat::zeros(image.size(), CV_32F) };
 
     //MAGNITUDE
-    // compute the magnitude and switch to logarithmic scale
-    // => log(1 + sqrt(Re(DFT(I))^2 + Im(DFT(I))^2))
-    split(image, planes);                   // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
+    // take the image and split it into real and imaginary and put both separate in planes ([0] and [1] respectively)
+    split(image, planes);
 
-    magnitude(planes[0], planes[1], planes[0]);// planes[0] = magnitude
+    magnitude(planes[0], planes[1], planes[0]);
     Mat magnitudeImage = planes[0];
 
-    magnitudeImage += Scalar::all(1);                    // switch to logarithmic scale
+    // switch to logarithmic scale
+    magnitudeImage += Scalar::all(1);
 
+
+    // do the log only for the dft and not other images that need this function
     if (dftImage) {
-        log(magnitudeImage, magnitudeImage);  // this log messes up the brightness
+        // => log(1 + sqrt(Re(DFT(I))^2 + Im(DFT(I))^2))
+        // this log messes up the brightness
+        log(magnitudeImage, magnitudeImage);
     }
 
     // crop the spectrum, if it has an odd number of rows or columns
     magnitudeImage = magnitudeImage(Rect(0, 0, magnitudeImage.cols & -2, magnitudeImage.rows & -2));
 
 
-    normalize(magnitudeImage, magnitudeImage, 0, 1, CV_MINMAX); // Transform the matrix with float values into a
-    // viewable image form (float between values 0 and 1).
+    // Transform the matrix with float values into a viewable image form (float between values 0 and 1).
+    normalize(magnitudeImage, magnitudeImage, 0, 1, CV_MINMAX);
 
     destImage = magnitudeImage;
 }
 
+// make images ready to display but not take into account the changes made.
 void showImage(String name, Mat image, bool dftImage){
     Mat imageShow;
     getVisualDFT(image, imageShow, dftImage);
     imshow(name, imageShow);
-
 }
 
-// rearrange the quadrants of Fourier image  so that the origin is at the image center
+// rearrange the quadrants of Fourier image so that the origin is at the image center
 // its stored again in image
 void rearrangeDFT(Mat& image){
-    int cx = image.cols/2;
-    int cy = image.rows/2;
+    int centerX = image.cols/2;
+    int centerY = image.rows/2;
 
 
-    Mat q0(image, Rect(0, 0, cx, cy));   // Top-Left - Create a ROI per quadrant
-    Mat q1(image, Rect(cx, 0, cx, cy));  // Top-Right
-    Mat q2(image, Rect(0, cy, cx, cy));  // Bottom-Left
-    Mat q3(image, Rect(cx, cy, cx, cy)); // Bottom-Right
+    Mat quadrant0(image, Rect(0, 0, centerX, centerY));   // Top-Left
+    Mat quadrant1(image, Rect(centerX, 0, centerX, centerY));  // Top-Right
+    Mat quadrant2(image, Rect(0, centerY, centerX, centerY));  // Bottom-Left
+    Mat quadrant3(image, Rect(centerX, centerY, centerX, centerY)); // Bottom-Right
 
-    Mat tmp;                           // swap quadrants (Top-Left with Bottom-Right)
-    q0.copyTo(tmp);
-    q3.copyTo(q0);
-    tmp.copyTo(q3);
+    // swap quadrants Top-Left with Bottom-Right
+    Mat tmp;
+    quadrant0.copyTo(tmp);
+    quadrant3.copyTo(quadrant0);
+    tmp.copyTo(quadrant3);
 
-    q1.copyTo(tmp);                    // swap quadrant (Top-Right with Bottom-Left)
-    q2.copyTo(q1);
-    tmp.copyTo(q2);
+    // swap quadrant Top-Right with Bottom-Left
+    quadrant1.copyTo(tmp);
+    quadrant2.copyTo(quadrant1);
+    tmp.copyTo(quadrant2);
 }
 
 void invertDFT(Mat& image, Mat& destImage){
@@ -335,12 +358,13 @@ void invertDFT(Mat& image, Mat& destImage){
     destImage = inverted;
 }
 
+// take the image and make it dft in order to apply filters later
 void readyDFT(String location, Mat& destImage){
     Mat image = imread(location, CV_LOAD_IMAGE_GRAYSCALE);
 
     Mat padded;
-    //expand input image to optimal size
-    // if size is an exponential of 2 it is a lot quicker to process
+    //expand image to an exponential of 2
+    // if size it is an exponential of 2 it is a lot quicker to process
     int m = getOptimalDFTSize( image.rows );
     int n = getOptimalDFTSize( image.cols );
 
@@ -352,16 +376,17 @@ void readyDFT(String location, Mat& destImage){
 
     Mat complexImage;
 
-    merge(planes, 2, complexImage);         // Add to the expanded another plane with zeros
+    // Add to the expanded image another plane with zeros
+    merge(planes, 2, complexImage);
 
-    dft(complexImage, complexImage);            // this way the result may fit in the source matrix
+    // this way the result may fit in the source matrix
+    dft(complexImage, complexImage);
 
     destImage = complexImage;
-
 }
 
 
-
+// creates a gaussian filter not a solid elipse like the rest. more like a gradient
 void gaussianFilter(Size size, Mat& destImage, int centerX, int centerY, float width, float height, float amp = 1.0f) {
     for (int r = 0; r < size.width; r++) {
         for (int c = 0; c < size.height; c++) {
@@ -375,21 +400,29 @@ void gaussianFilter(Size size, Mat& destImage, int centerX, int centerY, float w
 
 }
 
+
+// make an ellipse with as a thick line
 void bandPass(Mat& mask, int centerX, int centerY, float width, float height, int thickness){
     mask = Mat::ones(mask.size(), CV_32F);
     ellipse(mask, Point(centerX, centerY), Size(width, height), 0, 0, 360, Scalar(0, 0, 0), thickness);
 }
 
+
+// make a solid ellipse and only accept what is inside it (black ellipse)
 void lowPass(Mat& mask, int centerX, int centerY, float width, float height){
     mask = Mat::ones(mask.size(), CV_32F);
     ellipse(mask, Point(centerX, centerY), Size(width, height), 0, 0, 360, Scalar(0, 0, 0), -1);
 }
 
+
+// make a solid ellipse and only accept what is outside it (white ellipse)
 void highPass(Mat& mask, int centerX, int centerY, float width, float height){
     lowPass(mask, centerX, centerY, width, height);
     negativeImage(mask);
 }
 
+
+// special mask made specially for this image. hiding all white dots of noise that should not be there.
 void specialMask(Mat& mask){
     mask = Mat::ones(mask.size(), CV_32F);
     int dy = 43;
@@ -410,26 +443,23 @@ void specialMask(Mat& mask){
 
 void createMask(Mat& image, int type){
     Mat mask;
+
+    // find the size of
     int bSizeY = 30;
     int bSizeX = bSizeY * ((float)image.cols / (float)image.rows);
-    int sizex = image.cols;
-    int sizey = image.rows;
 
+    mask = Mat(Size(image.cols, image.rows), CV_32F);
 
-    mask = Mat(Size(sizex, sizey), CV_32F);
-
-    //gaussianFilter(Size(sizex, sizey), mask, image.cols/2, image.rows/2, bSizeX, bSizeY);
+    //gaussianFilter(Size(image.cols, image.rows), mask, image.cols/2, image.rows/2, bSizeX, bSizeY);
     //bandPass(mask, image.cols/2, image.rows/2, bSizeX, bSizeY, 10);
     //lowPass(mask, image.cols/2, image.rows/2, bSizeX, bSizeY);
     //highPass(mask, image.cols/2, image.rows/2, bSizeX, bSizeY);
     specialMask(mask);
 
-    //normalize(mask, mask, 0, 1, CV_MINMAX);
-
     showImage("Mask", mask, true);
 
 
-    // do the same than in the image with the 2 channels
+    // do the same than in the image with the 2 channels (real and imaginary)
     Mat planes[] = { Mat::zeros(image.size(), CV_32F), Mat::zeros(image.size(), CV_32F) };
 
     Mat fullMask;
